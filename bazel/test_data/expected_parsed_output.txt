@@ -1,0 +1,9 @@
+GENH crypto/include/internal/bn_conf.h
+GENASM crypto/aes/aes-x86_64.s
+CC crypto/aes/aes_cfb.c
+CC crypto/sha/sha1-mb-x86_64.s
+AR libssl.a
+RANLIB libssl.a
+RANLIB libcrypto.a
+AR test/libtestutil.a
+RANLIB test/libtestutil.a

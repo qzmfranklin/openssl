@@ -1,0 +1,22 @@
+# This file is an excerpt from the complete build log generated with
+# the following commands on a Ubuntu 16.06 machine that uses x86_64 cpu:
+#       # Run from the root directory of the openssl source tree.
+#       ./config no-shared no-dso
+#       make -j8 buld_libs
+# This comment and the empty line below should be completely ignored by the
+# openssl build log parser.
+
+/usr/bin/perl "-I." -Mconfigdata "util/dofile.pl" \
+    "-oMakefile" crypto/include/internal/bn_conf.h.in > crypto/include/internal/bn_conf.h
+make depend && make _build_libs
+make[1]: Entering directory '/home/zhongming/git/trunk/third_party/openssl/github'
+make[1]: Leaving directory '/home/zhongming/git/trunk/third_party/openssl/github'
+CC="gcc" /usr/bin/perl crypto/aes/asm/aes-x86_64.pl elf crypto/aes/aes-x86_64.s
+gcc  -I. -Icrypto/include -Iinclude -DNDEBUG -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE -DOPENSSL_PIC -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DRC4_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DGHASH_ASM -DECP_NISTZ256_ASM -DPADLOCK_ASM -DPOLY1305_ASM -DOPENSSLDIR="\"/usr/local/ssl\"" -DENGINESDIR="\"/usr/local/lib/engines-1.1\"" -Wall -O3 -pthread -m64 -DL_ENDIAN  -Wa,--noexecstack -fPIC -DOPENSSL_USE_NODELETE -MMD -MF crypto/aes/aes_cfb.d.tmp -MT crypto/aes/aes_cfb.o -c -o crypto/aes/aes_cfb.o crypto/aes/aes_cfb.c
+gcc  -I. -Icrypto/include -Iinclude -DNDEBUG -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE -DOPENSSL_PIC -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DRC4_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DGHASH_ASM -DECP_NISTZ256_ASM -DPADLOCK_ASM -DPOLY1305_ASM -DOPENSSLDIR="\"/usr/local/ssl\"" -DENGINESDIR="\"/usr/local/lib/engines-1.1\"" -Wall -O3 -pthread -m64 -DL_ENDIAN  -Wa,--noexecstack -fPIC -DOPENSSL_USE_NODELETE -MMD -MF crypto/sha/sha1-mb-x86_64.d.tmp -MT crypto/sha/sha1-mb-x86_64.o -c -o crypto/sha/sha1-mb-x86_64.o crypto/sha/sha1-mb-x86_64.s
+ar  r libssl.a ssl/bio_ssl.o ssl/d1_lib.o ssl/d1_msg.o ssl/d1_srtp.o ssl/methods.o ssl/packet.o ssl/pqueue.o ssl/record/dtls1_bitmap.o ssl/record/rec_layer_d1.o ssl/record/rec_layer_s3.o ssl/record/ssl3_buffer.o ssl/record/ssl3_record.o ssl/record/ssl3_record_tls13.o ssl/s3_cbc.o ssl/s3_enc.o ssl/s3_lib.o ssl/s3_msg.o ssl/ssl_asn1.o ssl/ssl_cert.o ssl/ssl_ciph.o ssl/ssl_conf.o ssl/ssl_err.o ssl/ssl_init.o ssl/ssl_lib.o ssl/ssl_mcnf.o ssl/ssl_rsa.o ssl/ssl_sess.o ssl/ssl_stat.o ssl/ssl_txt.o ssl/ssl_utst.o ssl/statem/extensions.o ssl/statem/extensions_clnt.o ssl/statem/extensions_cust.o ssl/statem/extensions_srvr.o ssl/statem/statem.o ssl/statem/statem_clnt.o ssl/statem/statem_dtls.o ssl/statem/statem_lib.o ssl/statem/statem_srvr.o ssl/t1_enc.o ssl/t1_lib.o ssl/t1_trce.o ssl/tls13_enc.o ssl/tls_srp.o
+ranlib libssl.a || echo Never mind.
+ranlib libcrypto.a || echo Never mind.
+ar  r test/libtestutil.a test/testutil/basic_output.o test/testutil/cb.o test/testutil/driver.o test/testutil/format_output.o test/testutil/main.o test/testutil/output_helpers.o test/testutil/stanza.o test/testutil/tap_bio.o test/testutil/test_main.o test/testutil/tests.o
+ranlib test/libtestutil.a || echo Never mind.
+make[1]: Leaving directory '/home/zhongming/git/trunk/third_party/openssl/github'
