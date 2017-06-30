@@ -186,3 +186,10 @@ pod2htmd.tmp
 # Windows manifest files
 *.manifest
 doc-nits
+
+# Bazel files
+bazel-bin
+bazel-genfiles
+bazel-github
+bazel-out
+bazel-testlogs
