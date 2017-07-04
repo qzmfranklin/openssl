@@ -1,6 +1,18 @@
 licenses(['notice'])
 package(default_visibility=['//visibility:public'])
 
+py_binary(
+    name = 'log_to_bzl',
+    srcs = [
+        'log_to_bzl.py',
+    ],
+    deps = [
+        ':parse_build_log',
+    ],
+    default_python_version = 'PY3',
+    srcs_version = 'PY3',
+)
+
 py_library(
     name = 'parse_build_log',
     srcs = [
