@@ -31,6 +31,18 @@ class TestParseBuildLog(unittest.TestCase):
             'r').readlines()
         self.assertEqual(actual_list, expected_list)
 
+    def test_parse_quoted_tokens(self):
+        results = parse_openssl_build_log(io.StringIO(
+            r'gcc  -DENGINESDIR="\"/usr/local/lib/engines-1.1\"" ds.c'))
+        self.assertEqual(results[0]['type'], 'CC')
+        self.assertEqual(results[0]['target'], 'ds.c')
+        self.assertEqual(results[0]['cmd'], [
+                'gcc',
+                '',
+                r'-DENGINESDIR="\"/usr/local/lib/engines-1.1\""',
+                'ds.c',
+        ])
+
 
 if __name__ == '__main__':
     unittest.main()

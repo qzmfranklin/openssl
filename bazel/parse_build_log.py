@@ -98,7 +98,12 @@ def parse_openssl_build_log(f):
             retval.append(dict(cmd=toks, type='GENASM', target=asm_fname))
         elif re.match('^gcc  .*\.[sc]$', line):
             # Compile .s and .c files into .o files.
-            toks = shlex.split(line)
+            #
+            # WARNING: Must not use shlex.split(line) because that would destroy
+            # the following macrosl, in raw strings:
+            #       -DENGINESDIR="\"/usr/local/lib/engines-1.1\""
+            #       -DOPENSSLDIR="\"/usr/local/ssl\""
+            toks = line.split(' ')
             src_fname = toks[-1]
             retval.append(dict(cmd=toks, type='CC', target=src_fname))
         elif re.match('^ar  r.*$', line):
