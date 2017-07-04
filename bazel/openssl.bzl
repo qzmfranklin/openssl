@@ -1,15 +1,21 @@
 
 
 def openssl_library():
-    openssl_copts = [
-        '-Icrypto/bn',
-        '-Icrypto/des',
-        '-Icrypto/modes',
+    openssl_includes = [
+        'include',
+        'crypto',
+        'crypto/include',
+        'crypto/bn',
+        'crypto/des',
+        'crypto/modes',
         # The generated headers are stored in the $(GENDIR).
-        '-I$(GENDIR)/%s/include' % PACKAGE_NAME,
-        '-I$(GENDIR)/%s/crypto' % PACKAGE_NAME,
-        '-I$(GENDIR)/%s/crypto/include' % PACKAGE_NAME,
+        '$(GENDIR)/%s/include' % PACKAGE_NAME,
+        '$(GENDIR)/%s/crypto' % PACKAGE_NAME,
+        '$(GENDIR)/%s/crypto/include' % PACKAGE_NAME,
     ]
+
+    if PACKAGE_NAME:
+        openssl_includes += [ '.' ]
 
     crypto_textual_hrds = [
         'crypto/LPdir_unix.c',
@@ -30,11 +36,12 @@ def openssl_library():
             'include/**/*.h',
             'e_os.h',
         ]) + ['crypto/include/internal/bn_conf.h', 'crypto/include/internal/dso_conf.h', 'include/openssl/opensslconf.h', 'crypto/buildinf.h'],
+        includes = openssl_includes,
         defines = [
             'OPENSSL_NO_STATIC_ENGINE',
         ],
         textual_hdrs = crypto_textual_hrds,
-        copts = openssl_copts + ['-DAES_ASM', '-DBSAES_ASM', '-DDSO_DLFCN', '-DECP_NISTZ256_ASM', '-DENGINESDIR="\\"/usr/local/lib/engines-1.1\\""', '-DGHASH_ASM', '-DHAVE_DLFCN_H', '-DL_ENDIAN', '-DMD5_ASM', '-DNDEBUG', '-DOPENSSLDIR="\\"/usr/local/ssl\\""', '-DOPENSSL_BN_ASM_GF2m', '-DOPENSSL_BN_ASM_MONT', '-DOPENSSL_BN_ASM_MONT5', '-DOPENSSL_IA32_SSE2', '-DOPENSSL_NO_STATIC_ENGINE', '-DOPENSSL_PIC', '-DOPENSSL_THREADS', '-DOPENSSL_USE_NODELETE', '-DPADLOCK_ASM', '-DPOLY1305_ASM', '-DRC4_ASM', '-DSHA1_ASM', '-DSHA256_ASM', '-DSHA512_ASM', '-DVPAES_ASM', '-I.', '-Icrypto/include', '-Iinclude', '-Wa,--noexecstack'],
+        copts = ['-DAES_ASM', '-DBSAES_ASM', '-DDSO_DLFCN', '-DECP_NISTZ256_ASM', '-DENGINESDIR="\\"/usr/local/lib/engines-1.1\\""', '-DGHASH_ASM', '-DHAVE_DLFCN_H', '-DL_ENDIAN', '-DMD5_ASM', '-DNDEBUG', '-DOPENSSLDIR="\\"/usr/local/ssl\\""', '-DOPENSSL_BN_ASM_GF2m', '-DOPENSSL_BN_ASM_MONT', '-DOPENSSL_BN_ASM_MONT5', '-DOPENSSL_IA32_SSE2', '-DOPENSSL_NO_STATIC_ENGINE', '-DOPENSSL_PIC', '-DOPENSSL_THREADS', '-DOPENSSL_USE_NODELETE', '-DPADLOCK_ASM', '-DPOLY1305_ASM', '-DRC4_ASM', '-DSHA1_ASM', '-DSHA256_ASM', '-DSHA512_ASM', '-DVPAES_ASM', '-I.', '-Icrypto/include', '-Iinclude', '-Wa,--noexecstack'],
         linkopts = openssl_linkopts,
     )
 
@@ -47,7 +54,8 @@ def openssl_library():
         hdrs = native.glob([
             'ssl/**/*.h',
         ]),
-        copts = openssl_copts + ['-DAES_ASM', '-DBSAES_ASM', '-DDSO_DLFCN', '-DECP_NISTZ256_ASM', '-DENGINESDIR="\\"/usr/local/lib/engines-1.1\\""', '-DGHASH_ASM', '-DHAVE_DLFCN_H', '-DL_ENDIAN', '-DMD5_ASM', '-DNDEBUG', '-DOPENSSLDIR="\\"/usr/local/ssl\\""', '-DOPENSSL_BN_ASM_GF2m', '-DOPENSSL_BN_ASM_MONT', '-DOPENSSL_BN_ASM_MONT5', '-DOPENSSL_IA32_SSE2', '-DOPENSSL_NO_STATIC_ENGINE', '-DOPENSSL_PIC', '-DOPENSSL_THREADS', '-DOPENSSL_USE_NODELETE', '-DPADLOCK_ASM', '-DPOLY1305_ASM', '-DRC4_ASM', '-DSHA1_ASM', '-DSHA256_ASM', '-DSHA512_ASM', '-DVPAES_ASM', '-I.', '-Icrypto/include', '-Iinclude', '-Wa,--noexecstack'],
+        includes = openssl_includes,
+        copts = ['-DAES_ASM', '-DBSAES_ASM', '-DDSO_DLFCN', '-DECP_NISTZ256_ASM', '-DENGINESDIR="\\"/usr/local/lib/engines-1.1\\""', '-DGHASH_ASM', '-DHAVE_DLFCN_H', '-DL_ENDIAN', '-DMD5_ASM', '-DNDEBUG', '-DOPENSSLDIR="\\"/usr/local/ssl\\""', '-DOPENSSL_BN_ASM_GF2m', '-DOPENSSL_BN_ASM_MONT', '-DOPENSSL_BN_ASM_MONT5', '-DOPENSSL_IA32_SSE2', '-DOPENSSL_NO_STATIC_ENGINE', '-DOPENSSL_PIC', '-DOPENSSL_THREADS', '-DOPENSSL_USE_NODELETE', '-DPADLOCK_ASM', '-DPOLY1305_ASM', '-DRC4_ASM', '-DSHA1_ASM', '-DSHA256_ASM', '-DSHA512_ASM', '-DVPAES_ASM', '-I.', '-Icrypto/include', '-Iinclude', '-Wa,--noexecstack'],
         linkopts = openssl_linkopts,
         deps = [
           ':crypto',
@@ -75,7 +83,6 @@ def openssl_library():
                 # Make the perl module files available at runtime.
                 'export DIR=%s' % '/'.join(['.', PACKAGE_NAME]),
                 'export PERL5LIB=$$DIR/third_party/perl:$$(dirname $(location :configdata_pm))',
-                'cd $$DIR',
             ] + ['/usr/bin/perl "$(location util/mkbuildinf.pl)" "gcc -DDSO_DLFCN -DHAVE_DLFCN_H -DNDEBUG -DOPENSSL_THREADS -DOPENSSL_NO_STATIC_ENGINE -DOPENSSL_PIC -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DRC4_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DGHASH_ASM -DECP_NISTZ256_ASM -DPADLOCK_ASM -DPOLY1305_ASM -DOPENSSLDIR=\\"\\\\\\"/usr/local/ssl\\\\\\"\\" -DENGINESDIR=\\"\\\\\\"/usr/local/lib/engines-1.1\\\\\\"\\"  -Wa,--noexecstack" linux-x86_64 > "$(location crypto/buildinf.h)"', '/usr/bin/perl -I. -Mconfigdata "$(location util/dofile.pl)" -oMakefile "$(location crypto/include/internal/bn_conf.h.in)" > "$(location crypto/include/internal/bn_conf.h)"', '/usr/bin/perl -I. -Mconfigdata "$(location util/dofile.pl)" -oMakefile "$(location crypto/include/internal/dso_conf.h.in)" > "$(location crypto/include/internal/dso_conf.h)"', '/usr/bin/perl -I. -Mconfigdata "$(location util/dofile.pl)" -oMakefile "$(location include/openssl/opensslconf.h.in)" > "$(location include/openssl/opensslconf.h)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/aes-x86_64.pl)" elf "$(location crypto/aes/aes-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/aesni-mb-x86_64.pl)" elf "$(location crypto/aes/aesni-mb-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/aesni-sha1-x86_64.pl)" elf "$(location crypto/aes/aesni-sha1-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/aesni-sha256-x86_64.pl)" elf "$(location crypto/aes/aesni-sha256-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/aesni-x86_64.pl)" elf "$(location crypto/aes/aesni-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/bsaes-x86_64.pl)" elf "$(location crypto/aes/bsaes-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/aes/asm/vpaes-x86_64.pl)" elf "$(location crypto/aes/vpaes-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/bn/asm/rsaz-avx2.pl)" elf "$(location crypto/bn/rsaz-avx2.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/bn/asm/rsaz-x86_64.pl)" elf "$(location crypto/bn/rsaz-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/bn/asm/x86_64-gf2m.pl)" elf "$(location crypto/bn/x86_64-gf2m.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/bn/asm/x86_64-mont.pl)" elf "$(location crypto/bn/x86_64-mont.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/bn/asm/x86_64-mont5.pl)" elf "$(location crypto/bn/x86_64-mont5.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/camellia/asm/cmll-x86_64.pl)" elf "$(location crypto/camellia/cmll-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/chacha/asm/chacha-x86_64.pl)" elf "$(location crypto/chacha/chacha-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/ec/asm/ecp_nistz256-x86_64.pl)" elf "$(location crypto/ec/ecp_nistz256-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/md5/asm/md5-x86_64.pl)" elf "$(location crypto/md5/md5-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/modes/asm/aesni-gcm-x86_64.pl)" elf "$(location crypto/modes/aesni-gcm-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/modes/asm/ghash-x86_64.pl)" elf "$(location crypto/modes/ghash-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/poly1305/asm/poly1305-x86_64.pl)" elf "$(location crypto/poly1305/poly1305-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/rc4/asm/rc4-md5-x86_64.pl)" elf "$(location crypto/rc4/rc4-md5-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/rc4/asm/rc4-x86_64.pl)" elf "$(location crypto/rc4/rc4-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/sha/asm/sha1-mb-x86_64.pl)" elf "$(location crypto/sha/sha1-mb-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/sha/asm/sha1-x86_64.pl)" elf "$(location crypto/sha/sha1-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/sha/asm/sha256-mb-x86_64.pl)" elf "$(location crypto/sha/sha256-mb-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/sha/asm/sha512-x86_64.pl)" elf "$(location crypto/sha/sha256-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/sha/asm/sha512-x86_64.pl)" elf "$(location crypto/sha/sha512-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/whrlpool/asm/wp-x86_64.pl)" elf "$(location crypto/whrlpool/wp-x86_64.s)"', 'CC=gcc /usr/bin/perl "$(location crypto/x86_64cpuid.pl)" elf "$(location crypto/x86_64cpuid.s)"']),
     )
 
