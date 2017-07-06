@@ -62,12 +62,12 @@ def openssl_library():
         visibility = [
             '//visibility:public',
         ],
-        srcs = {{ crypto.srcs }},
+        srcs = {{ ssl.srcs }},
         hdrs = native.glob([
             'ssl/**/*.h',
         ]),
         includes = openssl_includes,
-        copts = {{ crypto.copts }},
+        copts = {{ ssl.copts }},
         linkopts = openssl_linkopts,
         deps = [
           ':crypto',
