@@ -6,5 +6,6 @@
 # More details are available in the comments at the top of the bazel/openssl.bzl
 # file.
 licenses(['notice'])
-load(':bazel/openssl.bzl', 'openssl_library')
-openssl_library()
+package(default_visibility=['//visibility:__pkg__'])
+load(':bazel/openssl.bzl', 'openssl')
+openssl()
