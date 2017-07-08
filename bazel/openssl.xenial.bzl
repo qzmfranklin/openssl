@@ -164,8 +164,10 @@ def openssl():
             'progs.h',
         ],
         cmd = ' && '.join([
-            'export DIR=$$(readlink -f %s)' % '/'.join(['.', PACKAGE_NAME]),
-            'export PERL5LIB=$$DIR:$$DIR/third_party/perl:$$(readlink -f $(@D))',
+            # The python3 -c '...' hack emulates the GNU `readlink -f`, which is
+            # absent from BSD based distributions.
+            r'''export DIR=$$(python3 -c 'import os; print(os.path.realpath("%s"))') ''' % '/'.join(['.', PACKAGE_NAME]),
+            r'''export PERL5LIB=$$DIR:$$DIR/third_party/perl:$$(python3 -c 'import os; print(os.path.realpath("$(@D)"))') ''',
             'pushd $$DIR',
                 # This perl script must be invoked using exactly this format.
                 # Otherwise, it will fail to scan the apps/openssl directory and
