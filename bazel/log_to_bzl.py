@@ -165,10 +165,10 @@ def main():
 
     if args.format == 'human':
         for ele in parsed_results:
-            # if ele['type'] != 'UNKNOWN':
-                # print('\t%s\t%s' % (ele['type'], ele['target']))
-            # else:
-            print(ele['type'], ele['cmd'])
+            if ele['type'] != 'UNKNOWN':
+                print('\t%s\t%s' % (ele['type'], ele['target']))
+            else:
+                print(ele['type'], ele['cmd'])
     elif args.format == 'bazel':
         print(generate_bzl(parsed_results))
 

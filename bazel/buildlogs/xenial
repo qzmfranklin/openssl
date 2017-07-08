@@ -1,3 +1,5 @@
+# ./config no-shared no-dst
+# make build_libs -j8 | tee build.log.x86_64.ubuntu
 /usr/bin/perl "-I." -Mconfigdata "util/dofile.pl" \
     "-oMakefile" crypto/include/internal/bn_conf.h.in > crypto/include/internal/bn_conf.h
 /usr/bin/perl "-I." -Mconfigdata "util/dofile.pl" \

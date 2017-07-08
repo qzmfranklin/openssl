@@ -2,7 +2,7 @@
 # the following commands on a Ubuntu 16.06 machine that uses x86_64 cpu:
 #       # Run from the root directory of the openssl source tree.
 #       ./config no-shared no-dso
-#       make -j8 buld_libs
+#       make -j8 build_libs
 # This comment and the empty line below should be completely ignored by the
 # openssl build log parser.
 

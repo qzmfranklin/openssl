@@ -1,0 +1,4 @@
+GENH crypto/include/internal/bn_conf.h
+GENASM crypto/aes/aes-x86_64.s
+CC crypto/x86_64cpuid.s
+AR test/libtestutil.a

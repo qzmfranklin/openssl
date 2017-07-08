@@ -1,0 +1,7 @@
+# ./config no-shared no-dst
+# make build_libs -j8 | tee build.log.x86_64.darwin
+/usr/bin/perl "-I." -Mconfigdata "util/dofile.pl" \
+	    "-oMakefile" crypto/include/internal/bn_conf.h.in > crypto/include/internal/bn_conf.h
+CC="cc" /usr/bin/perl crypto/aes/asm/aes-x86_64.pl macosx crypto/aes/aes-x86_64.s
+cc  -I. -Icrypto/include -Iinclude -DNDEBUG -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE -DOPENSSL_PIC -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DRC4_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DGHASH_ASM -DECP_NISTZ256_ASM -DPADLOCK_ASM -DPOLY1305_ASM -DOPENSSLDIR="\"/usr/local/ssl\"" -DENGINESDIR="\"/usr/local/lib/engines-1.1\"" -O3 -D_REENTRANT -arch x86_64 -DL_ENDIAN -Wall  -fPIC -MMD -MF crypto/x86_64cpuid.d.tmp -MT crypto/x86_64cpuid.o -c -o crypto/x86_64cpuid.o crypto/x86_64cpuid.s
+ar  r test/libtestutil.a test/testutil/basic_output.o test/testutil/cb.o test/testutil/driver.o test/testutil/format_output.o test/testutil/main.o test/testutil/output_helpers.o test/testutil/stanza.o test/testutil/tap_bio.o test/testutil/test_main.o test/testutil/tests.o

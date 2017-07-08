@@ -91,12 +91,12 @@ def parse_openssl_build_log(f):
             toks = shlex.split(line)
             header_fname = toks[-1]
             retval.append(dict(cmd=toks, type='GENH', target=header_fname))
-        elif re.match('^CC="gcc" /usr/bin/perl .*$', line):
+        elif re.match('^CC="g?cc" /usr/bin/perl .*$', line):
             # Generate .s source files for the platform.  Requires
             # configdata.pm.
             CC, gcc, perl_script, elf, asm_fname = toks = shlex.split(line)
             retval.append(dict(cmd=toks, type='GENASM', target=asm_fname))
-        elif re.match('^gcc  .*\.[sc]$', line):
+        elif re.match('^g?cc  .*\.[sc]$', line):
             # Compile .s and .c files into .o files.
             #
             # WARNING: Must not use shlex.split(line) because that would destroy

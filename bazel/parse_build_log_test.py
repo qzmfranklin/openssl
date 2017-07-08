@@ -23,13 +23,16 @@ class TestParseBuildLog(unittest.TestCase):
             'line2start... line2end',
         ])
 
-    def test_openssl_build_log(self):
-        actual_list = []
-        for ele in parse_openssl_build_log(open('bazel/test_data/build.log', 'r')):
-            actual_list.append('%s %s\n' % (ele['type'], ele['target']))
-        expected_list = open('bazel/test_data/expected_parsed_output.txt',
-            'r').readlines()
-        self.assertEqual(actual_list, expected_list)
+    def test_openssl_build_logs(self):
+        os_targets = ['xenial', 'sierra']
+        for target in os_targets:
+            actual_list = []
+            buildlog_fname = 'bazel/test_data/build.log.%s' % target
+            for ele in parse_openssl_build_log(open(buildlog_fname, 'r')):
+                actual_list.append('%s %s\n' % (ele['type'], ele['target']))
+            expected_fname = 'bazel/test_data/expected.%s' % target
+            expected_list = open(expected_fname, 'r').readlines()
+            self.assertEqual(actual_list, expected_list)
 
     def test_parse_quoted_tokens(self):
         results = parse_openssl_build_log(io.StringIO(
