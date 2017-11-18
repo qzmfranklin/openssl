@@ -1,0 +1,19 @@
+openssl_linkopts = {{ linkopts | pprint }}
+
+crypto_asm_srcs = {{ crypto_asm.srcs | pprint }}
+
+crypto_srcs = {{ crypto.srcs | pprint }}
+
+crypto_generated_hdrs = {{ crypto.generated_hdrs | pprint }}
+
+crypto_copts = {{ crypto.copts | pprint }}
+
+ssl_srcs = {{ ssl.srcs | pprint }}
+
+ssl_copts = {{ ssl.copts | pprint }}
+
+genrule_outs = {{ genrule.outs | pprint }}
+
+genrule_cmds = {{ genrule.cmds }}
+
+genrule_srcs = {{ genrule.srcs | pprint }}

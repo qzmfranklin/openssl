@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 
-''' Generate openssl.bzl rule from openssl build log.
+'''
+Generate the data file that can be loaded by the BUILD file of openssl.
 '''
 
 
@@ -35,9 +36,11 @@ def generate_bzl(parsed_results):
     genrule_cmds = []
     genrule_srcs = []
     crypto_srcs = []
+    crypt_asm_srcs = []
     ssl_srcs = []
-    # In fact, crypto_copts is a strict superset of ssl_copts.  The extra flag
-    # is '-Icrypto/include'.
+
+    # In fact, as observed in reality, crypto_copts is a strict superset of
+    # ssl_copts.  The extra flag is '-Icrypto/include'.
     crypto_copts = []
     ssl_copts = []
     linkopts = ['-pthread', '-m64']
@@ -50,6 +53,10 @@ def generate_bzl(parsed_results):
             # and ssl library are built from source files under crypto/ and
             # ssl/, respectively.
             if target.startswith('crypto'):
+                # Handle the generated assembly files separately.
+                if target.endswith('.s'):
+                    crypt_asm_srcs.append(target)
+                    continue
                 crypto_srcs.append(target)
                 if not crypto_copts:
                     # Here is an excerpt from a typical 'CC' line:
@@ -125,6 +132,9 @@ def generate_bzl(parsed_results):
             'srcs': sorted(crypto_srcs),
             'generated_hdrs': generated_hdrs,
         },
+        'crypto_asm': {
+            'srcs': sorted(crypt_asm_srcs),
+        },
         'ssl': {
             'copts': sorted(ssl_copts),
             'srcs': sorted(ssl_srcs),
@@ -136,7 +146,7 @@ def generate_bzl(parsed_results):
             'srcs': sorted(list(set(genrule_srcs))),
         },
     }
-    template = jinja2.Template(open('openssl.bzl.j2').read())
+    template = jinja2.Template(open('generated_data.bzl.j2').read())
     return template.render(data)
 
 
