@@ -39,9 +39,39 @@ crypto_textual_hrds = [
 ]
 
 
-# This cc_library cannot be built alone.  It misses a few simples such as
-# OPENSSL_cpuid_setup.  Nonetheless, it could be used as a dependency in other
-# cc_library targets.
+cc_library(
+    name = 'crypto',
+    visibility = [
+        '//visibility:public',
+    ],
+    srcs = crypto_srcs + crypto_asm_srcs,
+    hdrs = glob([
+        'crypto/**/*.h',
+        'include/**/*.h',
+        'e_os.h',
+    ]) + crypto_generated_hdrs,
+    includes = openssl_includes,
+    defines = [
+        'OPENSSL_NO_STATIC_ENGINE',
+    ],
+    textual_hdrs = crypto_textual_hrds,
+    copts = crypto_copts + [
+        # See the comments above the commented cc_library target 'crypto_asm'
+        # for an explanation of why these copts.
+        '-B/usr/bin',
+        '-Wno-unused-command-line-argument',
+        '-fno-integrated-as',
+    ],
+    linkopts = openssl_linkopts,
+)
+
+# TODO (zhongming): Make this a standalone cc_library.
+#
+# Why it cannot build as a standalone cc_library:
+#
+#       Because it misses the symbol OPENSSL_cpuid_setup, which is implemented
+#       in crypto/cryptlib.c.
+#
 #
 # The reason for having this as a separate cc_library target is to isolate the
 # compilation of the generated assembly files.  More specifically for the
@@ -75,46 +105,31 @@ crypto_textual_hrds = [
 #
 #       The alternative to this approach, which is to make openssl generate .s
 #       files by looking at the target CPU, is much harder to implement.
-native.cc_library(
-    name = 'crypto_asm',
-    srcs = crypto_asm_srcs,
-    copts = [
-        '-B/usr/bin',
-        '-Wno-unused-command-line-argument',
-        '-fno-integrated-as',
-    ],
-)
+#
+#
+# What to do to enable it?
+#
+#   1.  Uncomment the target below.
+#
+#   2.  Add it as a deps to 'crypto'.
+#cc_library(
+    #name = 'crypto_asm',
+    #srcs = crypto_asm_srcs,
+    #copts = [
+        #'-B/usr/bin',
+        #'-Wno-unused-command-line-argument',
+        #'-fno-integrated-as',
+    #],
+#)
 
-native.cc_library(
-    name = 'crypto',
-    visibility = [
-        '//visibility:public',
-    ],
-    srcs = crypto_srcs,
-    hdrs = native.glob([
-        'crypto/**/*.h',
-        'include/**/*.h',
-        'e_os.h',
-    ]) + crypto_generated_hdrs,
-    includes = openssl_includes,
-    defines = [
-        'OPENSSL_NO_STATIC_ENGINE',
-    ],
-    textual_hdrs = crypto_textual_hrds,
-    copts = crypto_copts,
-    linkopts = openssl_linkopts,
-    deps = [
-        ':crypto_asm',
-    ],
-)
 
-native.cc_library(
+cc_library(
     name = 'ssl',
     visibility = [
         '//visibility:public',
     ],
     srcs = ssl_srcs,
-    hdrs = native.glob([
+    hdrs = glob([
         'ssl/**/*.h',
     ]),
     includes = openssl_includes,
@@ -125,9 +140,9 @@ native.cc_library(
     ]
 )
 
-native.genrule(
+genrule(
     name = 'generate_internal_files',
-    srcs = native.glob([
+    srcs = glob([
         # Perl modules used to generate asm files.
         #
         # The glob pattern below does not include the .pm files under the
@@ -149,9 +164,9 @@ native.genrule(
     ] + genrule_cmds),
 )
 
-native.genrule(
+genrule(
     name = 'configdata_pm',
-    srcs = native.glob([
+    srcs = glob([
         '**/*.pm',
         # The 10-main.conf is the database storing the combinationas of
         # platforms compilers supported by openssl.
@@ -185,12 +200,12 @@ native.genrule(
     ]),
 )
 
-native.cc_binary(
+cc_binary(
     name = 'openssl',
     visibility = [
         '//visibility:public',
     ],
-    srcs = native.glob([
+    srcs = glob([
         'apps/*.c',
         'apps/*.h',
     ], exclude=[
@@ -210,9 +225,9 @@ native.cc_binary(
     ],
 )
 
-native.genrule(
+genrule(
     name = 'progs_h',
-    srcs = native.glob([
+    srcs = glob([
         'apps/*.c',
     ]) + [
         'apps/progs.pl',
@@ -226,13 +241,13 @@ native.genrule(
         # absent from BSD based distributions.
         r'''export DIR=$$(python3 -c 'import os; print(os.path.realpath("%s"))') ''' % '/'.join(['.', PACKAGE_NAME]),
         r'''export PERL5LIB=$$DIR:$$DIR/third_party/perl:$$(python3 -c 'import os; print(os.path.realpath("$(@D)"))') ''',
-        'pushd $$DIR',
+        'cd $$DIR',
             # This perl script must be invoked using exactly this format.
             # Otherwise, it will fail to scan the apps/openssl directory and
             # miss out the `extern int` declarations in the generated
             # progs.h file.
             'perl apps/progs.pl apps/openssl > tmp',
-        'popd',
+        'cd -',
         'mv $$DIR/tmp $@',
     ]),
 )
