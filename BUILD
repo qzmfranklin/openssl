@@ -24,13 +24,10 @@ openssl_includes = [
     'crypto/des',
     'crypto/modes',
     # The generated headers are stored in the $(GENDIR).
-    '$(GENDIR)/%s/include' % PACKAGE_NAME,
-    '$(GENDIR)/%s/crypto' % PACKAGE_NAME,
-    '$(GENDIR)/%s/crypto/include' % PACKAGE_NAME,
-]
-
-if PACKAGE_NAME:
-    openssl_includes += [ '.' ]
+    '$(GENDIR)/%s/include' % package_name(),
+    '$(GENDIR)/%s/crypto' % package_name(),
+    '$(GENDIR)/%s/crypto/include' % package_name(),
+] + ([ '.' ] if package_name() else [])
 
 crypto_textual_hrds = [
     'crypto/LPdir_unix.c',

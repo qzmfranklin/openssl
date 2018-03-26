@@ -1,0 +1,3 @@
+[UPSTREAM]
+url = https://github.com/openssl/openssl
+branch = master
